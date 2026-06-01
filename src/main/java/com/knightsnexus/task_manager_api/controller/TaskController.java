@@ -7,7 +7,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
+import org.springframework.data.domain.Page;
 @RestController
 @RequestMapping("/api/tasks")
 @RequiredArgsConstructor
@@ -27,4 +27,14 @@ public class TaskController {
         TaskResponseDTO response = taskService.getTaskById(id);
         return ResponseEntity.ok(response);
     }
+
+    @GetMapping
+    public ResponseEntity<Page<TaskResponseDTO>> getAllTask(@RequestParam(defaultValue = "0") int page,
+                                                            @RequestParam(defaultValue = "5") int size) {
+        Page<TaskResponseDTO> tasks = taskService.getAllTasks(page, size);
+        return ResponseEntity.ok(tasks);
+    }
 }
+
+
+//{id] : Dynamic URL variable  }

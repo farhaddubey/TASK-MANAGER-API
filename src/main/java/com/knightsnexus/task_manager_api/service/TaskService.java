@@ -11,6 +11,11 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+
 @Service
 @RequiredArgsConstructor
 public class TaskService {
@@ -51,5 +56,55 @@ public class TaskService {
                 .completed(task.getCompleted())
                 .createdAt(task.getCreatedAt())
                 .build();
+    }
+
+    public Page<TaskResponseDTO> getAllTasks(int page, int size) {
+
+        Pageable pageable = PageRequest.of(page, size);
+
+        Page<Task> taskPage = taskRepository.findAll(pageable);
+
+        return taskPage.map(task ->
+                TaskResponseDTO.builder()
+                        .id(task.getId())
+                        .title(task.getTitle())
+                        .description(task.getDescription())
+                        .completed(task.getCompleted())
+                        .createdAt(task.getCreatedAt())
+                        .build()
+        ); 
+    }
+
+    public Page<TaskResponseDTO> searchTasks(int page, int size, String sortBy, String direction,
+                                             Boolean completed, String keyword) {
+        Sort sort = direction.equalsIgnoreCase("asc")
+                ? Sort.by(sortBy).ascending()
+                : Sort.by(sortBy).descending();
+        Pageable pageable = PageRequest.of(page, size, sort);
+
+        Page<Task> taskPage;
+
+        if (completed != null && keyword != null) {
+            taskPage = taskRepository.findByCompletedAndTitleContainingIgnoreCase(
+                    completed,
+                    keyword,
+                    pageable
+            );
+        } else if (completed != null) {
+            taskPage = taskRepository.findByCompleted(completed, pageable);
+        } else if (keyword != null) {
+            taskPage = taskRepository.findByTitleContainingIgnoreCase(keyword, pageable);
+        } else {
+            taskPage = taskRepository.findAll(pageable);
+        }
+        return taskPage.map(task ->
+                TaskResponseDTO.builder()
+                        .id(task.getId())
+                        .title(task.getTitle())
+                        .description(task.getDescription())
+                        .completed(task.getCompleted())
+                        .createdAt(task.getCreatedAt())
+                        .build()
+        );
     }
 }
