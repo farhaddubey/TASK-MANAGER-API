@@ -34,6 +34,25 @@ public class TaskController {
         Page<TaskResponseDTO> tasks = taskService.getAllTasks(page, size);
         return ResponseEntity.ok(tasks);
     }
+
+    @GetMapping("/search")
+    public ResponseEntity<Page<TaskResponseDTO>> searchtasks(@RequestParam(defaultValue = "0") int page,
+                                                             @RequestParam(defaultValue = "5") int size,
+                                                             @RequestParam(defaultValue = "createdAt") String sortBy,
+                                                             @RequestParam(defaultValue = "desc") String direction,
+                                                             @RequestParam(required = false) Boolean completed,
+                                                             @RequestParam(required = false) String keyword
+    ) {
+        Page<TaskResponseDTO> tasks = taskService.searchTasks(
+                page,
+                size,
+                sortBy,
+                direction,
+                completed,
+                keyword
+        );
+        return ResponseEntity.ok(tasks);
+    }
 }
 
 
