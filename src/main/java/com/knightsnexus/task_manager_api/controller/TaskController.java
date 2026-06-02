@@ -1,6 +1,7 @@
 package com.knightsnexus.task_manager_api.controller;
 
 import com.knightsnexus.task_manager_api.dto.request.TaskRequestDTO;
+import com.knightsnexus.task_manager_api.dto.request.UpdateTaskRequestDTO;
 import com.knightsnexus.task_manager_api.dto.response.TaskResponseDTO;
 import com.knightsnexus.task_manager_api.service.TaskService;
 import jakarta.validation.Valid;
@@ -52,6 +53,18 @@ public class TaskController {
                 keyword
         );
         return ResponseEntity.ok(tasks);
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<TaskResponseDTO> updateTask(@PathVariable Long id, @Valid @RequestBody UpdateTaskRequestDTO requestDTO) {
+        TaskResponseDTO response = taskService.updateTask(id, requestDTO);
+        return ResponseEntity.ok(response);
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<String> deleteTask(@PathVariable Long id) {
+        taskService.deleteTask(id);
+        return ResponseEntity.ok("Task Deleted successfully");
     }
 }
 

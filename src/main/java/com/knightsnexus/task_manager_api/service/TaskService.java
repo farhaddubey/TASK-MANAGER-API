@@ -1,6 +1,7 @@
 package com.knightsnexus.task_manager_api.service;
 
 import com.knightsnexus.task_manager_api.dto.request.TaskRequestDTO;
+import com.knightsnexus.task_manager_api.dto.request.UpdateTaskRequestDTO;
 import com.knightsnexus.task_manager_api.dto.response.TaskResponseDTO;
 import com.knightsnexus.task_manager_api.entity.Task;
 import com.knightsnexus.task_manager_api.exception.ResourceNotFoundException;
@@ -106,5 +107,31 @@ public class TaskService {
                         .createdAt(task.getCreatedAt())
                         .build()
         );
+    }
+
+    public TaskResponseDTO updateTask(Long id, UpdateTaskRequestDTO requestDTO) {
+        Task task = taskRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Task now foudn with id : " + id));
+        task.setTitle(requestDTO.getTitle());
+        task.setDescription(requestDTO.getDescription());
+        task.setCompleted(requestDTO.getCompleted());
+
+        Task updatedTask = taskRepository.save(task);
+
+        return TaskResponseDTO.builder()
+                .id(updatedTask.getId())
+                .title(updatedTask.getTitle())
+                .description(updatedTask.getDescription())
+                .completed(updatedTask.getCompleted())
+                .createdAt(updatedTask.getCreatedAt())
+                .build();
+    }
+
+    public void deleteTask(Long id) {
+        Task task = taskRepository.findById(id)
+                .orElseThrow(() ->
+                        new ResourceNotFoundException("Task now found with id : " + id)
+                );
+        taskRepository.delete(task);
     }
 }
