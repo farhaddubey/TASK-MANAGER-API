@@ -22,4 +22,15 @@ public class GlobalExceptionHandler {
 
         return new ResponseEntity<>(error, HttpStatus.NOT_FOUND);
     }
+
+    @ExceptionHandler(DuplicateResourceException.class)
+    public ResponseEntity<Map<String, Object>> handleDuplicateResource(DuplicateResourceException ex) {
+        Map<String, Object> error = new HashMap<>();
+
+        error.put("timestamp", LocalDateTime.now());
+        error.put("message", ex.getMessage());
+        error.put("status", HttpStatus.CONFLICT.value());
+
+        return new ResponseEntity<>(error, HttpStatus.CONFLICT);
+    }
 }
